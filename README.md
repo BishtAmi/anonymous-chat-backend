@@ -1,2 +1,1 @@
-A Anonymous chat app backend 
-it matches two users anonymously so they can chat.
+This is the backend for an anonymous chat application where two users are matched randomly and can chat with each other anonymously using WebSockets.
