@@ -7,6 +7,12 @@ function handleConnection(ws, wss) {
 
   queue.push(ws);
   matchUsers();
+  // If the user is still unmatched after a few seconds, send a waiting message
+  setTimeout(() => {
+    if (!pairs.has(ws) && ws.readyState === WebSocket.OPEN) {
+      ws.send("Waiting for a match...");
+    }
+  }, 1000); 
 
   ws.on("message", (message) => {
     const readableMsg = message.toString();
@@ -18,8 +24,8 @@ function handleConnection(ws, wss) {
     }
   });
 
-  ws.on("close", () => {
-    console.log("User disconnected");
+  ws.on("close", (code, reason) => {
+    console.log(`User disconnected - Code: ${code}, Reason: ${reason}`);
     removeUser(ws);
   });
 }
@@ -37,8 +43,8 @@ function matchUsers() {
       pairs.set(user1, user2);
       pairs.set(user2, user1);
 
-      user1.send("Connected to a stranger! Say hi!");
-      user2.send("Connected to a stranger! Say hi!");
+      if (pairs.has(user1)) user1.send("Connected to a stranger! Say hi!");
+      if (pairs.has(user2)) user2.send("Connected to a stranger! Say hi!");
     }
   }
 }
